@@ -1,6 +1,6 @@
 
 
-![alt text](https://github.com/Talgat18/js-nsk-spring-19/blob/typeracer/typerace/screenshot.PNG)
+![alt text](https://github.com/Talgat18/quoteracerMERN/blob/master/client/src/img/example.png)
 
 ### Github Pages
 

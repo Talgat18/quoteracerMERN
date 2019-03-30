@@ -1,0 +1,4 @@
+{
+  "mongoURI": "mongodb+srv://takt123:takt123@cluster0-7gkc6.mongodb.net/test?retryWrites=true",
+  "jwtSecret": "tinkoff"
+}

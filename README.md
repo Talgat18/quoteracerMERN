@@ -2,7 +2,7 @@
 
 ![alt text](https://github.com/Talgat18/quoteracerMERN/blob/master/client/src/img/example.png)
 
-### Github Pages
+### Heroku
 
 ```
 https://vast-waters-36486.herokuapp.com/

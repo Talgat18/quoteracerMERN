@@ -22,6 +22,12 @@ https://vast-waters-36486.herokuapp.com/
 https://fish-text.ru/
 ```
 
+### DB
+
+```
+MongoDB
+```
+
 ### Установка
 
 ```

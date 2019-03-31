@@ -5,6 +5,7 @@ import play from "../img/play-button.png";
 import axios from "axios";
 import { connect } from "react-redux";
 import { addScore } from "../actions/authActions";
+import { loadText } from "../actions/textActions";
 import { Button, Modal, ModalHeader, ModalFooter } from "reactstrap";
 import { TimelineMax, TweenMax } from "gsap";
 let tl = new TimelineMax();
@@ -40,17 +41,20 @@ export class Typeracer extends Component {
     }));
   }
   // Чтобы получить новый рекорд с сервера, надо обновить страницу
-  componentDidMount() {
+
+  componentDidMount =  () => {
     this.animations(); // Тригер анимаций
     this.getText();
-    this.startIntervals(); // Тригер интервалов
-    let shakingTimer = setInterval(this.handlingShaking.bind(this), 1000);
-    this.setState({
-      shakingTimer: shakingTimer
-    });
+    if (this.props.isTextLoading === false) {
+      this.startIntervals(); // Тригер интервалов
+      let shakingTimer = setInterval(this.handlingShaking.bind(this), 1000);
+      this.setState({
+        shakingTimer: shakingTimer
+      });
+    }
 
     document.getElementById("h-img0").style.display = "none";
-  }
+  };
 
   //--------------INTERVALS-----------------//
 
@@ -67,6 +71,51 @@ export class Typeracer extends Component {
     this.setState({
       WPM_TIMER: WPM_TIMER
     });
+  };
+
+  //---------------TEXT-----------------//
+
+  getText() {
+    // прямо тут
+    axios
+      .get("https://fish-text.ru/get?type=title&format=html")
+      .then(response => {
+        let text = response.data.replace("<h1>", "").replace("</h1>", "");
+        let typeWithin = Math.floor(
+          response.data.replace("<h1>", "").replace("</h1>", "").length / 3
+        );
+        this.setState({
+          text: text,
+          typeWithin: typeWithin,
+          timeLeft: typeWithin
+        });
+      })
+      .catch(function(error) {
+        // handle error
+        console.log(error);
+      });
+  }
+
+  gettingText = () => {
+    // в редаксе
+    this.props.loadText();
+    if (this.props.isTextLoading === false) {
+      console.log("This is prop text", this.props.text);
+      let loadedText = this.props.text;
+      let text = loadedText.replace("<h1>", "").replace("</h1>", "");
+      let typeWithin = Math.floor(
+        loadedText.replace("<h1>", "").replace("</h1>", "").length / 3
+      );
+      this.setState({
+        text: text,
+        typeWithin: typeWithin,
+        timeLeft: typeWithin
+      });
+    }
+  };
+
+  someShit = () => {
+    console.log("This is prop text", this.props.text);
   };
 
   //---------------WPM-----------------//
@@ -96,7 +145,6 @@ export class Typeracer extends Component {
   };
 
   timer = () => {
-    this.matchingScoreAndRec();
     if (this.state.timeLeft > 0) {
       // Если время еще есть
       this.setState({ timeLeft: this.state.timeLeft - 1 });
@@ -157,28 +205,6 @@ export class Typeracer extends Component {
     document.getElementById("quote-input").style.background = "";
   };
 
-  //---------------TEXT-----------------//  Перетащить в экшены
-
-  getText() {
-    axios
-      .get("https://fish-text.ru/get?type=title&format=html")
-      .then(response => {
-        let text = response.data.replace("<h1>", "").replace("</h1>", "");
-        let typeWithin = Math.floor(
-          response.data.replace("<h1>", "").replace("</h1>", "").length / 3
-        );
-        this.setState({
-          text: text,
-          typeWithin: typeWithin,
-          timeLeft: typeWithin
-        });
-      })
-      .catch(function(error) {
-        // handle error
-        console.log(error);
-      });
-  }
-
   //---------------ONCHANGE-----------------//
 
   onChange = e => {
@@ -193,7 +219,7 @@ export class Typeracer extends Component {
       this.addingScore();
       this.getText();
       e.target.value = "";
-      document.getElementById("quote-input").style.background = "";
+      e.target.style.background = "";
       document.getElementById("timer").style.color = "#fff";
     }
   };
@@ -203,6 +229,7 @@ export class Typeracer extends Component {
   addingScore = () => {
     this.setState({ smth: this.state.score++ });
     localStorage.setItem("scorez", this.state.score);
+    this.matchingScoreAndRec(); // updating record on server
   };
 
   onAddScoreClick = (id, score) => {
@@ -372,6 +399,14 @@ export class Typeracer extends Component {
         <span className="note" id="note">
           Перезагрузите страницу для обновления рекорда.
         </span>{" "}
+        <button className="alert-danger" onClick={this.gettingText}>
+          {" "}
+          123
+        </button>
+        <button className="alert-danger" onClick={this.someShit}>
+          {" "}
+          124
+        </button>
         <Modal
           isOpen={this.state.modal}
           toggle={this.toggle}
@@ -400,10 +435,12 @@ export class Typeracer extends Component {
 const mapStateToProps = state => ({
   isAuthenticated: state.auth.isAuthenticated,
   record: state.auth.score,
-  auth: state.auth
+  auth: state.auth,
+  text: state.text.text,
+  isTextLoading: state.text.isTextLoading
 });
 
 export default connect(
   mapStateToProps,
-  { addScore }
+  { addScore, loadText }
 )(Typeracer);

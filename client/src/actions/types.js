@@ -9,4 +9,5 @@ export const REGISTER_FAIL = "REGISTER_FAIL";
 export const GET_ERRORS = "GET_ERRORS";
 export const CLEAR_ERRORS = "CLEAR_ERRORS";
 export const ADD_SCORE = "ADD_SCORE";
-export const GET_TEXT = "GET_TEXT";
+export const TEXT_LOADING = "TEXT_LOADING";
+export const TEXT_LOADED = "TEXT_LOADED";
